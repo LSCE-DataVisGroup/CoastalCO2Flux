@@ -11,7 +11,7 @@
 
 <link href="lib/bootstrap.css" rel="stylesheet">
 <script src="lib/bootstrap.min.js"></script>
-<link href="lib/sticky-footer-navbar.css" rel="stylesheet">
+<link href="lib/sticky-footer-navbar-orig.css" rel="stylesheet">
 <link href="style.css" rel="stylesheet" type="text/css">
 <script src="lib/colorbrewer.js"></script>
 
@@ -46,13 +46,13 @@
       <div id="infotext" style="width: 700px;"></div>
       <div id="infotext2" style="width: 615px;"></div>
 
-      <p id="chart">
+      <div id="chart">
 
         <ul class="nytg-sort" style='position: absolute; left: 770px; top: 130px;'>
-          <li id="mapButton">Reset</li>
+          <li id="mapButton">Reset</li>          
         </ul>
 
-        <!--<ul class="nytg-sort" style='position: absolute; left: 875px; top: 130px;'>
+        <!--<ul class="nytg-sort" style='position: absolute; left: 875px; top: 130px;'>          
           <li id="gridButton">Grid</li>
         </ul>-->
 
@@ -61,11 +61,11 @@
         </div>
         <div id="legendDiv"></div>
 
-      </p>
+      </div>
 
       <script src="sankey.js"></script>
       <script>
-        var histfile = "orca05_absAnthroPerArea_TgPerYr_12june2016.tsv",
+        var histfile = "orca05_absAnthroPerArea_TgPerYr_12june2016.tsv", //orca05.tsv            
           mapfile = "Continental_Shelf_mapshaper_1pc_marcatsid_10june2016.topojson",
           //mapfile = "Continental_Shelf_v5_mapshaper_1pc_marcatsid.topojson",
           continentsFile = "ne_110m_coastline.topojson", //"continents_mapshaper_1pc.topojson",
@@ -256,7 +256,8 @@
             if (error) throw error;
 
             color.domain(d3.keys(data[0]).filter(function(key) {
-              if (key) {                
+              if (key) {
+                //console.log("key: ", key)
                 return key !== "RCLASS"; //Region names
               }
             }));
@@ -312,7 +313,8 @@
               .attr("dy", ".15em")
               .attr("transform", "rotate(-65)")
               .on("mouseenter", function(d) { //hover over x-axis class labels
-                
+
+                //console.log("orig font-weight: ", d3.select(this).style("font-weight"))
                 d3.select(this)
                   .style("cursor", "pointer")
                   .style("font-weight", "bold");
@@ -430,6 +432,7 @@
                 }
               })
               .style("fill", function(d) {
+                //console.log("color(d.name): ", d.name +", "+ color(d.name))
                 return color(d.name);
               });
 
@@ -581,6 +584,8 @@
             var path = d3.geo.path().projection(projection);
             var t = projection.translate(); // the projection's default translation
             var s = projection.scale(200) // the projection's default scale
+            console.log("t orig: ", t)
+            console.log("s orig: ", s)
 
             var path = d3.geo.path()
               .projection(projection);
@@ -833,6 +838,9 @@
               // the map doesn't 'zoom onto the mouse point'
               projection.scale(s * d3.event.scale);
 
+              console.log("t now: ", t)
+              console.log("s now: ", s)
+
               // redraw the map
               //svg4.selectAll("path").attr("d", path);
               //uk.selectAll("path").attr("d", path);
@@ -881,7 +889,7 @@
               x = (bounds[0][0] + bounds[1][0]) / 2,
               y = (bounds[0][1] + bounds[1][1]) / 2,
               scale = .2 / Math.max(dx / m_width, dy / m_height), //orig scale factor = .9
-              translate = [m_width / 2 - scale * x, m_height / 2 - scale * y];
+              translate = [m_width / 2 - scale * x, m_height / 2 - scale * y];          
 
             globalg.transition()
               .duration(750)
@@ -973,20 +981,46 @@
 
           return class_to_match;
         }
-      
+
+        // hex_EBC = ["#C4D4D1", "#2ca25f", "#ccece6", "#66c2a4", "#99d8c9", "#006d2c"];
+        // hex_Polar = ["#7FA0FF", "#6baed6", "#2171b5", "#c6dbef", "#9ecae1", "#4292c6", "#084594"];
+
+
+        // function hexToRgb(hex) {
+        //     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        //     return result ? {
+        //         r: parseInt(result[1], 16),
+        //         g: parseInt(result[2], 16),
+        //         b: parseInt(result[3], 16)
+        //     } : null;
+        // }
+
+        // function calc_L(hex) {
+        //   var L = [];
+
+        //   for (i=0; i<hex.length; i++) {
+        //     var rgb = hexToRgb(hex[i]);
+        //     L[i] = 0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b;
+        //   }
+        //   console.log("L: ", L)
+
+        //   return L;
+        // }
       </script>
 
-    </div>
-    <!-- /.container -->
-  </div>
-  <!-- /.wrap -->
+    </div><!-- /.container -->
 
-  <!--<div id="footer">
+  </div><!-- /.wrap -->
+  
+
+  <div id="footer">
     <div class="container">
-      <p class="text-muted credit"><span title="Climate and Environment Sciences Laboratory" style="font-weight:bold;">LSCE</span> &nbsp;<img src="LSCE_Icon.png" title="Climate and Environment Sciences Laboratory" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version 1.3 - 2016/02/05 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Authors: Cathy Nangini, Patrick Brockmann.</p>
+      <p class="text-muted credit">Created by <a target="_blank" href="http://www.lsce.ipsl.fr/en"><span title="Climate and Environment Sciences Laboratory" style="font-weight:bold;">LSCE</span></a>&nbsp;<a target="_blank" href="http://www.lsce.ipsl.fr/en"><img src="img/LSCE_Icon.png" title="Climate and Environment Sciences Laboratory"/></a> and hosted by <a target="_blank" href="http://www.ipsl.fr/en"><span title="Institut Pierre Simon Laplace" style="font-weight:bold;">IPSL</span></a>&nbsp;<a target="_blank" href="http://www.ipsl.fr/en"><img src="img/IPSL_logo.png" title="Institut Pierre Simon Laplace"/></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2016/06/12</p>
+      
+    </div><!-- /.container -->
+  </div><!-- /.footer -->
 
-    </div>
-  </div>-->
+  </div>
 
 </body>
 
